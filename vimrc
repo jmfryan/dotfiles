@@ -8,10 +8,16 @@ endif
 
 call plug#begin('~/.vim/plugged')
 
+" Colorschemes
 Plug 'w0ng/vim-hybrid'
 Plug 'kristijanhusak/vim-hybrid-material'
+
+Plug 'romainl/Apprentice'
+Plug 'morhetz/gruvbox'
+Plug 'joshdick/onedark.vim'
+ 
+" Generaal
 Plug 'jiangmiao/auto-pairs'
-Plug 'fatih/vim-go'
 Plug 'tpope/vim-fugitive'
 Plug 'tpope/vim-rhubarb' 
 Plug 'scrooloose/nerdtree'
@@ -32,6 +38,8 @@ Plug 'AndrewRadev/splitjoin.vim'
 Plug 'junegunn/goyo.vim'
 Plug 'junegunn/limelight.vim'
 
+" Go
+Plug 'fatih/vim-go'
 " Ember
 Plug 'tpope/vim-projectionist'
 Plug 'tpope/vim-surround'
@@ -65,12 +73,12 @@ let mapleader = " "
 
 syntax on
 set background=dark
-colorscheme hybrid_material
+colorscheme onedark
 
 " Macvim
 if has("gui_macvim")
   set hlsearch
-  highlight Normal guibg=grey10
+"  highlight Normal guibg=grey10
   set macligatures
   set guifont=Fira\ Code:h15
   set linespace=5
@@ -103,6 +111,15 @@ filetype indent on
 filetype plugin on
 
 set nofoldenable 
+set incsearch
+
+set wildmenu
+set wildcharm=<C-Z>
+
+" Do not litter the source directory
+set backupdir=~/.vim/backup//
+set directory=~/.vim/swap//
+set undodir=~/.vim/undo//
 
 " Completion
 set omnifunc=syntaxcomplete#Complete
@@ -112,8 +129,6 @@ let g:ycm_autoclose_preview_window_after_completion=1
 
 " NERDTree
 let g:NERDTreeWinSize=30
-map <C-n> :NERDTreeToggle<CR>
-map <C-l> :NERDTreeFind<CR>
 
 let g:fzf_action = {
   \ 'ctrl-o': 'e',
@@ -123,44 +138,43 @@ let g:fzf_action = {
 
 " fzf
 nnoremap <silent> <C-b> :Buffers<CR>
-nnoremap <silent> <C-g>g :Ag<CR>
-nnoremap <silent> <C-g>c :Commands<CR>
-nnoremap <silent> <C-g>l :BLines<CR>
 nnoremap <silent> <C-p> :Files<CR>
+
+map <C-Tab> :b <C-Z>
+
+" Move up and down in quickfix windows
+nnoremap <C-j> :cn<CR>
+nnoremap <C-k> :cp<CR>
+
+" Go to alternate file
+nnoremap <Leader>a :A<CR>
+
+" Find word under cursor in project
+nnoremap <Leader>f :Ack! <C-r><C-w><CR>
+
+" Quick access to git commands
+nnoremap <Leader>gs :Gstatus<CR>
+nnoremap <Leader>gd :Gdiff<CR>
+nnoremap <Leader>gb :Gblame<CR>
+
+vnoremap <C-r> "hy:%s/<C-r>h//gc<left><left><left>
+
+" Ruby
+nmap <Leader>tf :RunSpec<CR>
+nmap <Leader>tl :RunSpecLine<CR>
+nmap <Leader>tt :RunSpecLastRun<CR>
+
+map <C-n> :NERDTreeToggle<CR>
+map <C-l> :NERDTreeFind<CR>
+
+
+
+set diffopt+=vertical
 
 " silver searcher / ack
 if executable('ag')
   let g:ackprg = 'ag --vimgrep'
 endif
-
-set wildmenu
-set wildcharm=<C-Z>
-map <C-Tab> :b <C-Z>
-
-" tabs
-nnoremap tk :tabprev<CR>
-nnoremap tt :tabnext<CR>
-nnoremap tj :tabnext<CR>
-nnoremap tn :tabnew<CR>
-nnoremap tx :tabclose<CR>
-
-nnoremap <C-j> :cn<CR>
-nnoremap <C-k> :cp<CR>
-
-vnoremap <C-r> "hy:%s/<C-r>h//gc<left><left><left>
-
-nnoremap <Leader>a :A<CR>
-nnoremap <Leader>f :Ack! <C-r><C-w><CR>
-
-inoremap <C-Space> <C-x><C-o>
-inoremap <C-@> <C-Space>
-
-set diffopt+=vertical
-nnoremap <Leader>gs :Gstatus<CR>
-nnoremap <Leader>gd :Gdiff<CR>
-nnoremap <Leader>gb :Gblame<CR>
-
-nnoremap <Leader><Tab> :bnext<CR>
 
 " Ruby
 autocmd BufNewFile,BufRead *.markdown setfiletype octopress
@@ -171,15 +185,15 @@ autocmd FileType ruby,eruby let g:rubycomplete_rails = 1
 autocmd FileType ruby,eruby let g:rubycomplete_classes_in_global = 1
 
 " Linting
-let g:ale_sign_warning = '◆'
-let g:ale_sign_error = '✗'
-highlight link ALEWarningSign Function
+let g:ale_sign_warning = '◊'
+let g:ale_sign_error = 'X'
+highlight link ALEWarningSign Number
 highlight link ALEErrorSign Identifier
 let g:ale_fixers = {
 \   'javascript': ['eslint'],
 \   'ruby': ['rubocop']
 \}
-let g:ale_fix_on_save = 1
+" let g:ale_fix_on_save = 1
 
 " LightLine
 set laststatus=2 
@@ -231,20 +245,6 @@ function! s:MaybeUpdateLightline()
     call lightline#update()
   end
 endfunction
-
-" Ruby
-nmap <Leader>rf :RunSpec<CR>
-nmap <Leader>rl :RunSpecLine<CR>
-nmap <Leader>rr :RunSpecLastRun<CR>
-
-" Ember
-autocmd FileType js,javascript nnoremap <C-r>a RunAllEmberTests<CR>
-autocmd FileType js,javascript nnoremap <C-r>l RunSingleEmberTest<CR>
-autocmd FileType js,javascript nnoremap <C-r>f RunSingleEmberTestModule<CR>
-autocmd FileType js,javascript nnoremap <C-r>r RerunLastEmberTests<CR>
-
-nnoremap <Leader>x /\<<C-R>=expand('<cword>')<CR>\>\C<CR>``cgn
-nnoremap <Leader>X ?\<<C-R>=expand('<cword>')<CR>\>\C<CR>``cgN
 
 " Surround
 vmap " :'<,'>call Quote('"', '"')<CR> 
