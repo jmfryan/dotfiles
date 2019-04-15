@@ -1,0 +1,11 @@
+snippet module
+options head
+  module('${1:name}', function(hooks) {
+    ${0}
+  });
+
+snippet test
+options head
+    test('${1:name}', async function(assert) {
+      ${0}
+    });

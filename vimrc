@@ -9,6 +9,7 @@ endif
 call plug#begin('~/.vim/plugged')
 "
 " Colorschemes
+Plug 'rakr/vim-one'
 Plug 'chriskempson/base16-vim'
 Plug 'itchyny/lightline.vim'
 Plug 'daviesjamie/vim-base16-lightline' 
@@ -32,7 +33,11 @@ endif
 
 Plug 'Shougo/echodoc.vim'
 
-" Generaal
+" navigate tmux panes like vim panes
+Plug 'christoomey/vim-tmux-navigator'
+Plug 'benmills/vimux'
+
+" General
 Plug 'jiangmiao/auto-pairs'
 Plug 'tpope/vim-fugitive' " git commands
 Plug 'tpope/vim-rhubarb' " browse on github
@@ -45,7 +50,9 @@ Plug 'w0rp/ale' " Linting
 Plug 'sheerun/vim-polyglot' " multiple languages
 Plug 'terryma/vim-expand-region' " use + to expand visual selection
 Plug 'PeterRincker/vim-argumentative' " motions for function args using ,
-Plug 'janko-m/vim-test' 
+Plug 'neomake/neomake'
+Plug 'janko/vim-test' 
+Plug 'cristianbica/neomake-rspec'
 Plug 'AndrewRadev/splitjoin.vim' " gS and gJ for smart splitting and joining of lines
 
 Plug 'Shougo/neosnippet.vim' "snippets using <C-k>
@@ -65,6 +72,7 @@ Plug 'tpope/vim-surround'
 Plug 'tpope/vim-dispatch'
 Plug 'dsawardekar/portkey'
 Plug 'dsawardekar/ember.vim'
+Plug 'joukevandermaas/vim-ember-hbs'
 Plug 'poetic/vim-textobj-javascript'
 Plug 'carlitux/deoplete-ternjs', { 'do': 'npm install -g tern' }
 
@@ -74,19 +82,16 @@ Plug 'vim-utils/vim-ruby-fold'
 Plug 'tpope/vim-endwise'
 Plug 'tpope/vim-rails'
 Plug 'itmammoth/run-rspec.vim'
+Plug 'thoughtbot/vim-rspec'
 Plug 'ngmy/vim-rubocop'
 Plug 'kana/vim-textobj-user'
 Plug 'nelstrom/vim-textobj-rubyblock'
-
 Plug 'junkblocker/patchreview-vim'
 Plug 'codegram/vim-codereview'
 
 "Python
 Plug 'alfredodeza/pytest.vim'
 Plug 'zchee/deoplete-jedi'
-
-" C#
-Plug 'OmniSharp/omnisharp-vim'
 
 " Html
 Plug 'alvan/vim-closetag'
@@ -96,10 +101,11 @@ call plug#end()
 let mapleader = " "
 
 syntax on
-set background=dark
+set background=light
 let base16colorspace=256  " Access colors present in 256 colorspace
 let g:terminal_ansi_colors=['#181818', '#ab4642', '#a1b56c', '#f7ca88', '#7cafc2', '#ba8baf', '#86c1b9', '#d8d8d8', '#585858', '#ab4642', '#a1b56c', '#f7ca88', '#7cafc2', '#ba8baf', '#86c1b9', '#86c1b9']
 colorscheme base16-material-darker
+set fillchars=vert:│
 "set termguicolors
 " Macvim
 if has("gui_macvim")
@@ -115,16 +121,20 @@ if has("gui_macvim")
   set guioptions-=b
   set guioptions-=v
   set guioptions-=L
+  "set transparency=8
 endif
 
-set number relativenumber
+"set number relativenumber
+set nonumber
+set signcolumn=yes
 set linebreak
 set scrolloff=5
+set mouse=a
 
 augroup numbertoggle
-  autocmd!
-  autocmd BufEnter,FocusGained,InsertLeave * set relativenumber
-  autocmd BufLeave,FocusLost,InsertEnter   * set norelativenumber
+"  autocmd!
+"  autocmd BufEnter,FocusGained,InsertLeave * set relativenumber
+"  autocmd BufLeave,FocusLost,InsertEnter   * set norelativenumber
 augroup END
 
 set tabstop=2
@@ -146,16 +156,43 @@ set wildcharm=<C-Z>
 
 set previewheight=5
 
+map <C-c> "*y
+" " Copy to clipboard
+vnoremap  <leader>y  "+y
+nnoremap  <leader>Y  "+yg_
+nnoremap  <leader>y  "+y
+nnoremap  <leader>yy  "+yy
+
+" " Paste from clipboard
+nnoremap <leader>p "+p
+nnoremap <leader>P "+P
+vnoremap <leader>p "+p
+vnoremap <leader>P "+P
+
 " Do not litter the source directory
 set backupdir=~/.vim/backup//
 set directory=~/.vim/swap//
 set undodir=~/.vim/undo//
 
-let g:LanguageClient_serverCommands = {
-    \ 'javascript.jsx': ['tcp://127.0.0.1:2089'],
-    \ 'python': ['/usr/local/bin/pyls'],
-    \ 'ruby': [ 'solargraph',  'stdio' ],
-    \ }
+"let g:LanguageClient_serverCommands = {
+"    \ 'javascript.jsx': ['tcp://127.0.0.1:2089'],
+"    \ 'python': ['/usr/local/bin/pyls'],
+"    \ 'ruby': [ 'solargraph',  'stdio' ],
+"    \ }
+
+let g:LanguageClient_autoStart = 1
+
+" Minimal LSP configuration for JavaScript
+let g:LanguageClient_serverCommands = {}
+if executable('javascript-typescript-stdio')
+  let g:LanguageClient_serverCommands.javascript = ['javascript-typescript-stdio']
+  " Use LanguageServer for omnifunc completion
+  autocmd FileType javascript setlocal omnifunc=LanguageClient#complete
+else
+  echo "javascript-typescript-stdio not installed!\n"
+  :cq
+endif
+
 
 nnoremap <Leader>n :call LanguageClient_contextMenu()<CR>
 
@@ -195,50 +232,42 @@ let g:fzf_action = {
 nnoremap <silent> <C-b> :Buffers<CR>
 nnoremap <silent> <C-p> :Files<CR>
 
-" Move up and down in quickfix windows
-nnoremap <C-j> :cn<CR>
-nnoremap <C-k> :cp<CR>
-
 " Find word under cursor in project
 nnoremap <Leader>f :Ack! <C-r><C-w><CR>
 
 " Quick access to git commands
-nnoremap <Leader>gs :Gstatus<CR>
+nnoremap <Leader>gs :Gstatus<CR><C-w>10+
 nnoremap <Leader>gd :Gdiff<CR>
 nnoremap <Leader>gb :Gblame<CR>
 
+" Replace visual selection with confirmation
 vnoremap <C-r> "hy:%s/<C-r>h//gc<left><left><left>
 
+" quick find
 nnoremap <C-f> :Ack! -F ""<left>
 
-nnoremap <silent> <C-Tab> :bn<CR>
-
 " Snippets
-
-" Note: It must be "imap" and "smap".  It uses <Plug> mappings.
 imap <C-k>     <Plug>(neosnippet_expand_or_jump)
 smap <C-k>     <Plug>(neosnippet_expand_or_jump)
 xmap <C-k>     <Plug>(neosnippet_expand_target)
 
-" SuperTab like snippets behavior.
-" Note: It must be "imap" and "smap".  It uses <Plug> mappings.
-"imap <expr><TAB>
-" \ pumvisible() ? "\<C-n>" :
-" \ neosnippet#expandable_or_jumpable() ?
-" \    "\<Plug>(neosnippet_expand_or_jump)" : "\<TAB>"
-smap <expr><TAB> neosnippet#expandable_or_jumpable() ?
-\ "\<Plug>(neosnippet_expand_or_jump)" : "\<TAB>"
-
-" For conceal markers.
-if has('conceal')
-  set conceallevel=2 concealcursor=niv
-endif
+let g:neosnippet#snippets_directory='~/dotfiles/snippets'
 
 
 " Ruby
-autocmd FileType ruby,eruby nmap <Leader>tf <Esc>:RunSpec<CR>
-autocmd FileType ruby,eruby nmap <Leader>tl <Esc>:RunSpecLine<CR>
-autocmd FileType ruby,eruby nmap <Leader>tt <Esc>:RunSpecLastRun<CR>
+"
+"
+let g:neomake_ruby_enabled_makers=['rspec']
+
+let test#strategy = "vimux"
+let g:neomake_logfile='/Users/jackryan/tmp/neomake.log'
+
+"autocmd FileType ruby,eruby nmap <Leader>tf <Esc> :RunSpec<CR>
+"autocmd FileType ruby,eruby nmap <Leader>tl <Esc> :RunSpecLine<CR>
+"autocmd FileType ruby,eruby nmap <Leader>tt <Esc> :RunSpecLastRun<CR>
+autocmd FileType ruby,eruby nmap <Leader>tf <Esc> :TestFile<CR>
+autocmd FileType ruby,eruby nmap <Leader>tl <Esc> :TestNearest<CR>
+autocmd FileType ruby,eruby nmap <Leader>tt <Esc> :TestLast<CR>
 autocmd FileType ruby,eruby nmap <Leader>a :A<CR>
 
 " Python
@@ -266,13 +295,13 @@ autocmd Filetype go nmap <Leader>a <Plug>(go-alternate-edit)
 
 " Ember 
 nmap <Leader>a :A<CR>
+nmap <Leader>v :R<CR>
 nmap <Leader>rf <ESC>:ALEFix<CR>
 
+command GenerateTest !echo "%" | sed -E 's/^app\/components\/(.*).js$/\1/' | xargs ember g component-test 
 
 map <C-n> :NERDTreeToggle<CR>
-map <C-l> :NERDTreeFind<CR>
-
-
+map <Leader>l :NERDTreeFind<CR>
 
 set diffopt+=vertical
 
@@ -289,10 +318,9 @@ autocmd FileType ruby,eruby let g:rubycomplete_buffer_loading = 1
 autocmd FileType ruby,eruby let g:rubycomplete_rails = 1
 autocmd FileType ruby,eruby let g:rubycomplete_classes_in_global = 1
 
-au BufReadPost *.hbs set syntax=mustache
+"au BufReadPost *.hbs set syntax=mustache
 " Testing
 let test#python#pytest#executable = 'script/test'
-let test#strategy = "vimterminal"
 
 " Linting
 let g:ale_set_highlights = 0
@@ -319,33 +347,6 @@ let g:closetag_xhtml_filenames = '*.xhtml,*.js,*.erb'
 let g:closetag_emptyTags_caseSensitive = 1
 let g:closetag_shortcut = '>'
 
-" C#
-augroup omnisharp_commands
-    autocmd!
-    "
-    " Show type information automatically when the cursor stops moving
-    autocmd CursorHold *.cs call OmniSharp#TypeLookupWithoutDocumentation()
-
-    " The following commands are contextual, based on the cursor position.
-    autocmd FileType cs nnoremap <buffer> gd :OmniSharpGotoDefinition<CR>
-    autocmd FileType cs nnoremap <buffer> <Leader>fi :OmniSharpFindImplementations<CR>
-    autocmd FileType cs nnoremap <buffer> <Leader>fs :OmniSharpFindSymbol<CR>
-    autocmd FileType cs nnoremap <buffer> <Leader>fu :OmniSharpFindUsages<CR>
-
-    " Finds members in the current buffer
-    autocmd FileType cs nnoremap <buffer> <Leader>fm :OmniSharpFindMembers<CR>
-
-    autocmd FileType cs nnoremap <buffer> <Leader>fx :OmniSharpFixUsings<CR>
-    autocmd FileType cs nnoremap <buffer> <Leader>tt :OmniSharpTypeLookup<CR>
-    autocmd FileType cs nnoremap <buffer> <Leader>dc :OmniSharpDocumentation<CR>
-    autocmd FileType cs nnoremap <buffer> <C-\> :OmniSharpSignatureHelp<CR>
-    autocmd FileType cs inoremap <buffer> <C-\> <C-o>:OmniSharpSignatureHelp<CR>
-
-    " Navigate up and down by method/property/field
-    autocmd FileType cs nnoremap <buffer> <C-k> :OmniSharpNavigateUp<CR>
-    autocmd FileType cs nnoremap <buffer> <C-j> :OmniSharpNavigateDown<CR>
-  augroup END
-
 " LightLine
 set laststatus=2 
 
@@ -353,12 +354,19 @@ let g:lightline = {
 \ 'colorscheme': 'base16',
 \ 'active': {
 \   'left': [['mode', 'paste'], ['filename', 'modified']],
-\   'right': [['lineinfo'], ['percent'], ['readonly', 'linter_warnings', 'linter_errors', 'linter_ok']]
+\   'right': [['lineinfo'], ['percent'], ['readonly', 'linter_warnings', 'linter_errors', 'linter_ok'], ['make_running']]
+\ },
+\ 'inactive': {
+\   'left': [['filename', 'modified']],
+\   'right': [['make_running']]
 \ },
 \ 'component_expand': {
 \   'linter_warnings': 'LightlineLinterWarnings',
 \   'linter_errors': 'LightlineLinterErrors',
 \   'linter_ok': 'LightlineLinterOK'
+\ },
+\ 'component_function': {
+\   'make_running': 'SpinnerText'
 \ },
 \ 'component_type': {
 \   'readonly': 'error',
@@ -398,7 +406,7 @@ function! s:MaybeUpdateLightline()
 endfunction
 
 " Surround
-vmap " :'<,'>call Quote('"', '"')<CR> 
+"vmap " :'<,'>call Quote('"', '"')<CR> 
 vmap ' :'<,'>call Quote("'", "'")<CR> 
 vmap ` :'<,'>call Quote("`", "`")<CR> 
 vmap ( :'<,'>call Surround('(', ')')<CR> 
@@ -448,3 +456,44 @@ endfun
 function! FormatJSON()
   :%!python -m json.tool
 endfunction
+
+let s:spinner_index = 0
+let s:active_spinners = 0
+let s:spinner_states = ['|', '/', '--', '\', '|', '/', '--', '\']
+
+function! StartSpinner()
+    let b:show_spinner = 1
+    let s:active_spinners += 1
+    if s:active_spinners == 1
+        let s:spinner_timer = timer_start(1000 / len(s:spinner_states), 'SpinSpinner', {'repeat': -1})
+    endif
+endfunction
+
+function! StopSpinner()
+    let b:show_spinner = 0
+    let s:active_spinners -= 1
+    if s:active_spinners == 0
+        :call timer_stop(s:spinner_timer)
+    endif
+endfunction
+
+function! SpinSpinner(timer)
+    let s:spinner_index = float2nr(fmod(s:spinner_index + 1, len(s:spinner_states)))
+    redraw
+endfunction
+
+function! SpinnerText()
+    if get(b:, 'show_spinner', 0) == 0
+        return " "
+    endif
+
+    return s:spinner_states[s:spinner_index]
+endfunction
+
+augroup neomake_hooks
+    au!
+    autocmd User NeomakeJobInit :call StartSpinner()
+    autocmd User NeomakeJobInit :echom "Build started"
+    autocmd User NeomakeFinished :call StopSpinner()
+    " autocmd User NeomakeFinished :echom "Build complete"
+  augroup END
