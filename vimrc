@@ -25,12 +25,6 @@ Plug 'autozimu/LanguageClient-neovim', {
     \ 'do': 'bash install.sh',
     \ }
 
-if has('nvim')
-  Plug 'Shougo/deoplete.nvim', { 'do': ':UpdateRemotePlugins' }
-else
-  Plug 'Shougo/deoplete.nvim'
-endif
-
 Plug 'Shougo/echodoc.vim'
 
 " navigate tmux panes like vim panes
@@ -52,7 +46,6 @@ Plug 'terryma/vim-expand-region' " use + to expand visual selection
 Plug 'PeterRincker/vim-argumentative' " motions for function args using ,
 Plug 'neomake/neomake'
 Plug 'janko/vim-test' 
-Plug 'cristianbica/neomake-rspec'
 Plug 'AndrewRadev/splitjoin.vim' " gS and gJ for smart splitting and joining of lines
 
 Plug 'Shougo/neosnippet.vim' "snippets using <C-k>
@@ -74,7 +67,7 @@ Plug 'dsawardekar/portkey'
 Plug 'dsawardekar/ember.vim'
 Plug 'joukevandermaas/vim-ember-hbs'
 Plug 'poetic/vim-textobj-javascript'
-Plug 'carlitux/deoplete-ternjs', { 'do': 'npm install -g tern' }
+Plug 'neoclide/coc.nvim', {'do': { -> coc#util#install()}}
 
 " Ruby
 Plug 'vim-ruby/vim-ruby'
@@ -91,7 +84,6 @@ Plug 'codegram/vim-codereview'
 
 "Python
 Plug 'alfredodeza/pytest.vim'
-Plug 'zchee/deoplete-jedi'
 
 " Html
 Plug 'alvan/vim-closetag'
@@ -174,50 +166,6 @@ set backupdir=~/.vim/backup//
 set directory=~/.vim/swap//
 set undodir=~/.vim/undo//
 
-"let g:LanguageClient_serverCommands = {
-"    \ 'javascript.jsx': ['tcp://127.0.0.1:2089'],
-"    \ 'python': ['/usr/local/bin/pyls'],
-"    \ 'ruby': [ 'solargraph',  'stdio' ],
-"    \ }
-
-let g:LanguageClient_autoStart = 1
-
-" Minimal LSP configuration for JavaScript
-let g:LanguageClient_serverCommands = {}
-"if executable('javascript-typescript-stdio')
-  "let g:LanguageClient_serverCommands.javascript = ['javascript-typescript-stdio']
-  "" Use LanguageServer for omnifunc completion
-  "autocmd FileType javascript setlocal omnifunc=LanguageClient#complete
-"else
-  "echo "javascript-typescript-stdio not installed!\n"
-endif
-
-
-nnoremap <Leader>n :call LanguageClient_contextMenu()<CR>
-
-" Completion
-let g:deoplete#enable_at_startup = 1
-autocmd InsertLeave,CompleteDone * if pumvisible() == 0 | pclose | endif
-inoremap <expr> <Tab> pumvisible() ? "\<C-n>" : "\<Tab>"
-inoremap <expr> <S-Tab> pumvisible() ? "\<C-p>" : "\<S-Tab>"
-let g:python_host_prog = '/Users/jackryan/.vim/virtualenv/py2/bin/python'
-let g:python3_host_prog = '/Users/jackryan/.vim/virtualenv/py3/bin/python'
-
-let g:deoplete#sources#ternjs#types = 1
-let g:deoplete#sources#ternjs#depths = 1
-let g:deoplete#sources#ternjs#docs = 1
-let g:deoplete#sources#ternjs#filter = 0
-let g:deoplete#sources#ternjs#case_insensitive = 1
-let g:deoplete#sources#ternjs#expand_word_forward = 0
-let g:deoplete#sources#ternjs#omit_object_prototype = 0
-let g:deoplete#sources#ternjs#include_keywords = 1
-let g:tern#command = ["tern"]
-let g:tern#arguments = ["--persistent"]
-
-call deoplete#custom#source('LanguageClient',
-      \ 'min_pattern_length',
-      \ 2)
-
 let g:NERDTreeWinSize=30
 
 let g:fzf_action = {
@@ -254,16 +202,7 @@ let g:neosnippet#snippets_directory='~/dotfiles/snippets'
 
 
 " Ruby
-"
-"
-let g:neomake_ruby_enabled_makers=['rspec']
-
 let test#strategy = "vimux"
-let g:neomake_logfile='/Users/jackryan/tmp/neomake.log'
-
-"autocmd FileType ruby,eruby nmap <Leader>tf <Esc> :RunSpec<CR>
-"autocmd FileType ruby,eruby nmap <Leader>tl <Esc> :RunSpecLine<CR>
-"autocmd FileType ruby,eruby nmap <Leader>tt <Esc> :RunSpecLastRun<CR>
 autocmd FileType ruby,eruby nmap <Leader>tf <Esc> :TestFile<CR>
 autocmd FileType ruby,eruby nmap <Leader>tl <Esc> :TestNearest<CR>
 autocmd FileType ruby,eruby nmap <Leader>tt <Esc> :TestLast<CR>
@@ -309,13 +248,49 @@ if executable('rg')
   let g:ackprg = 'rg --vimgrep --no-heading'
 endif
 
+" Completion
+" Use tab for trigger completion with characters ahead and navigate.
+" Use command ':verbose imap <tab>' to make sure tab is not mapped by other plugin.
+inoremap <silent><expr> <TAB>
+      \ pumvisible() ? "\<C-n>" :
+      \ <SID>check_back_space() ? "\<TAB>" :
+      \ coc#refresh()
+inoremap <expr><S-TAB> pumvisible() ? "\<C-p>" : "\<C-h>"
+
+function! s:check_back_space() abort
+  let col = col('.') - 1
+  return !col || getline('.')[col - 1]  =~# '\s'
+endfunction
+
+" Use <c-space> to trigger completion.
+inoremap <silent><expr> <c-space> coc#refresh()
+
+function! s:show_documentation()
+  if (index(['vim','help'], &filetype) >= 0)
+    execute 'h '.expand('<cword>')
+  else
+    call CocAction('doHover')
+  endif
+endfunction
+
+" Remap keys for gotos
+nmap <silent> gd <Plug>(coc-definition)
+nmap <silent> gy <Plug>(coc-type-definition)
+nmap <silent> gi <Plug>(coc-implementation)
+nmap <silent> gr <Plug>(coc-references)
+
+" Use K to show documentation in preview window
+nnoremap <silent> K :call <SID>show_documentation()<CR>
+
+nmap <leader>r  <Plug>(coc-codeaction)
+
 " Ruby
 autocmd BufNewFile,BufRead *.markdown setfiletype octopress
-
 autocmd FileType ruby,eruby set omnifunc=rubycomplete#Complete
 autocmd FileType ruby,eruby let g:rubycomplete_buffer_loading = 1
 autocmd FileType ruby,eruby let g:rubycomplete_rails = 1
 autocmd FileType ruby,eruby let g:rubycomplete_classes_in_global = 1
+autocmd FileType ruby,eruby let test#ruby#rspec#executable = 'pilot exec intercom bundle exec rspec -- --no-profile'
 
 "au BufReadPost *.hbs set syntax=mustache
 " Testing
@@ -352,12 +327,11 @@ set laststatus=2
 let g:lightline = {
 \ 'colorscheme': 'base16',
 \ 'active': {
-\   'left': [['mode', 'paste'], ['filename', 'modified']],
-\   'right': [['lineinfo'], ['percent'], ['readonly', 'linter_warnings', 'linter_errors', 'linter_ok'], ['make_running']]
+\   'left': [['mode', 'paste'], ['cocstatus', 'filename', 'modified']],
+\   'right': [['lineinfo'], ['percent'], ['readonly', 'linter_warnings', 'linter_errors', 'linter_ok']]
 \ },
 \ 'inactive': {
 \   'left': [['filename', 'modified']],
-\   'right': [['make_running']]
 \ },
 \ 'component_expand': {
 \   'linter_warnings': 'LightlineLinterWarnings',
@@ -365,7 +339,7 @@ let g:lightline = {
 \   'linter_ok': 'LightlineLinterOK'
 \ },
 \ 'component_function': {
-\   'make_running': 'SpinnerText'
+\   'cocstatus': 'coc#status'
 \ },
 \ 'component_type': {
 \   'readonly': 'error',
@@ -455,44 +429,3 @@ endfun
 function! FormatJSON()
   :%!python -m json.tool
 endfunction
-
-let s:spinner_index = 0
-let s:active_spinners = 0
-let s:spinner_states = ['|', '/', '--', '\', '|', '/', '--', '\']
-
-function! StartSpinner()
-    let b:show_spinner = 1
-    let s:active_spinners += 1
-    if s:active_spinners == 1
-        let s:spinner_timer = timer_start(1000 / len(s:spinner_states), 'SpinSpinner', {'repeat': -1})
-    endif
-endfunction
-
-function! StopSpinner()
-    let b:show_spinner = 0
-    let s:active_spinners -= 1
-    if s:active_spinners == 0
-        :call timer_stop(s:spinner_timer)
-    endif
-endfunction
-
-function! SpinSpinner(timer)
-    let s:spinner_index = float2nr(fmod(s:spinner_index + 1, len(s:spinner_states)))
-    redraw
-endfunction
-
-function! SpinnerText()
-    if get(b:, 'show_spinner', 0) == 0
-        return " "
-    endif
-
-    return s:spinner_states[s:spinner_index]
-endfunction
-
-augroup neomake_hooks
-    au!
-    autocmd User NeomakeJobInit :call StartSpinner()
-    autocmd User NeomakeJobInit :echom "Build started"
-    autocmd User NeomakeFinished :call StopSpinner()
-    " autocmd User NeomakeFinished :echom "Build complete"
-  augroup END
