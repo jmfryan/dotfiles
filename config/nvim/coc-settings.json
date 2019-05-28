@@ -1,0 +1,7 @@
+{
+  "solargraph.enable": true,
+  "solargraph.filetypes": ["ruby", "eruby"]
+}
+
+
+
