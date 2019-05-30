@@ -1,3 +1,4 @@
+export ZSH=$HOME/.oh-my-zsh
 ZSH_THEME="simple"
 plugins=(git)
 source $ZSH/oh-my-zsh.sh
@@ -42,3 +43,4 @@ source "$BASE16_SHELL/scripts/base16-material-darker.sh"
 export EDITOR='nvim'
 alias vim=nvim
 
+eval "$(intercom-profile)"

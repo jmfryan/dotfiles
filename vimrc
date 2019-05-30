@@ -34,6 +34,7 @@ Plug 'benmills/vimux'
 " General
 Plug 'jiangmiao/auto-pairs'
 Plug 'tpope/vim-fugitive' " git commands
+Plug 'airblade/vim-gitgutter'
 Plug 'tpope/vim-rhubarb' " browse on github
 Plug 'scrooloose/nerdtree' " file browser
 Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': './install --all' } " install fzf command line
@@ -93,7 +94,7 @@ call plug#end()
 let mapleader = " "
 
 syntax on
-set background=light
+set background=dark
 let base16colorspace=256  " Access colors present in 256 colorspace
 let g:terminal_ansi_colors=['#181818', '#ab4642', '#a1b56c', '#f7ca88', '#7cafc2', '#ba8baf', '#86c1b9', '#d8d8d8', '#585858', '#ab4642', '#a1b56c', '#f7ca88', '#7cafc2', '#ba8baf', '#86c1b9', '#86c1b9']
 colorscheme base16-material-darker
@@ -200,6 +201,15 @@ xmap <C-k>     <Plug>(neosnippet_expand_target)
 
 let g:neosnippet#snippets_directory='~/dotfiles/snippets'
 
+"gitgutter
+let g:gitgutter_sign_added = '│'
+let g:gitgutter_sign_modified = '│'
+let g:gitgutter_sign_removed = '_'
+let g:gitgutter_sign_removed_first_line = '^'
+let g:gitgutter_sign_modified_removed = '│'
+set updatetime=250
+nmap <Leader>gn <Plug>GitGutterNextHunk  
+nmap <Leader>gp <Plug>GitGutterPrevHunk
 
 " Ruby
 let test#strategy = "vimux"
@@ -297,7 +307,6 @@ autocmd FileType ruby,eruby let test#ruby#rspec#executable = 'pilot exec interco
 let test#python#pytest#executable = 'script/test'
 
 " Linting
-let g:ale_set_highlights = 0
 let g:ale_sign_warning = '!'
 let g:ale_sign_error = 'X'
 highlight link ALEWarningSign Number
