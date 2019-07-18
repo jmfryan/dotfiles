@@ -307,15 +307,19 @@ autocmd FileType ruby,eruby let test#ruby#rspec#executable = 'pilot exec interco
 let test#python#pytest#executable = 'script/test'
 
 " Linting
-let g:ale_sign_warning = '!'
-let g:ale_sign_error = 'X'
+let g:ale_sign_warning = '▲'
+let g:ale_sign_error = '●'
 highlight link ALEWarningSign Number
 highlight link ALEErrorSign Identifier
+let g:ale_open_list = 0
+let g:ale_list_window_size = 5
 
 let g:ale_linters = {
-\   'cs': ['OmniSharp']
+\   'cs': ['OmniSharp'],
+\   'handlebars': ['prettier'],
 \}
 let g:ale_fixers = {
+\   'handlebars': ['prettier'],
 \   'javascript': ['prettier'],
 \   'ruby': ['rubocop'],
 \   'python': ['black']

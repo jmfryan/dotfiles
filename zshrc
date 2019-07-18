@@ -44,3 +44,5 @@ export EDITOR='nvim'
 alias vim=nvim
 
 eval "$(intercom-profile)"
+
+export PATH="$HOME/.yarn/bin:$HOME/.config/yarn/global/node_modules/.bin:$PATH"
