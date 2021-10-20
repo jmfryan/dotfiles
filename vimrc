@@ -16,6 +16,7 @@ Plug 'daviesjamie/vim-base16-lightline'
 
 Plug 'rakr/vim-two-firewatch'
 Plug 'rakr/vim-one'
+Plug 'folke/tokyonight.nvim', { 'branch': 'main' }
 
 Plug 'roxma/nvim-yarp'
 Plug 'roxma/vim-hug-neovim-rpc'
@@ -35,13 +36,16 @@ Plug 'benmills/vimux'
 Plug 'jiangmiao/auto-pairs'
 Plug 'tpope/vim-fugitive' " git commands
 Plug 'airblade/vim-gitgutter'
+Plug 'mattn/webapi-vim'
+Plug 'mattn/vim-gist'
 Plug 'tpope/vim-rhubarb' " browse on github
 Plug 'scrooloose/nerdtree' " file browser
+Plug 'ryanoasis/vim-devicons' " file icons
+Plug 'vwxyutarooo/nerdtree-devicons-syntax'
 Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': './install --all' } " install fzf command line
 Plug 'junegunn/fzf.vim' " fzf fuzzy finder
 Plug 'mileszs/ack.vim' " Ack for file serach
 Plug 'adelarsq/vim-matchit'
-Plug 'w0rp/ale' " Linting
 Plug 'sheerun/vim-polyglot' " multiple languages
 Plug 'terryma/vim-expand-region' " use + to expand visual selection
 Plug 'PeterRincker/vim-argumentative' " motions for function args using ,
@@ -97,7 +101,7 @@ syntax on
 set background=dark
 let base16colorspace=256  " Access colors present in 256 colorspace
 let g:terminal_ansi_colors=['#181818', '#ab4642', '#a1b56c', '#f7ca88', '#7cafc2', '#ba8baf', '#86c1b9', '#d8d8d8', '#585858', '#ab4642', '#a1b56c', '#f7ca88', '#7cafc2', '#ba8baf', '#86c1b9', '#86c1b9']
-colorscheme base16-material-darker
+colorscheme jack-material-darker
 set fillchars=vert:│
 "set termguicolors
 " Macvim
@@ -125,9 +129,6 @@ set scrolloff=5
 set mouse=a
 
 augroup numbertoggle
-"  autocmd!
-"  autocmd BufEnter,FocusGained,InsertLeave * set relativenumber
-"  autocmd BufLeave,FocusLost,InsertEnter   * set norelativenumber
 augroup END
 
 set tabstop=2
@@ -149,18 +150,7 @@ set wildcharm=<C-Z>
 
 set previewheight=5
 
-map <C-c> "*y
-" " Copy to clipboard
-vnoremap  <leader>y  "+y
-nnoremap  <leader>Y  "+yg_
-nnoremap  <leader>y  "+y
-nnoremap  <leader>yy  "+yy
-
-" " Paste from clipboard
-nnoremap <leader>p "+p
-nnoremap <leader>P "+P
-vnoremap <leader>p "+p
-vnoremap <leader>P "+P
+set fillchars=fold:\ ,vert:\│,eob:\ ,msgsep:‾ " Hides ~ on blank lines.
 
 " Do not litter the source directory
 set backupdir=~/.vim/backup//
@@ -181,7 +171,8 @@ nnoremap <silent> <C-b> :Buffers<CR>
 nnoremap <silent> <C-p> :Files<CR>
 
 " Find word under cursor in project
-nnoremap <Leader>f :Ack! <C-r><C-w><CR>
+nnoremap <Leader>ff :Ack! -F ""<left><C-r><C-w><CR>
+nnoremap <Leader>fa :Ack! -F ""<left><C-r><C-w><right> app
 
 " Quick access to git commands
 nnoremap <Leader>gs :Gstatus<CR><C-w>10+
@@ -202,14 +193,15 @@ xmap <C-k>     <Plug>(neosnippet_expand_target)
 let g:neosnippet#snippets_directory='~/dotfiles/snippets'
 
 "gitgutter
+let g:gitgutter_override_sign_column_highlight = 0
 let g:gitgutter_sign_added = '│'
 let g:gitgutter_sign_modified = '│'
 let g:gitgutter_sign_removed = '_'
 let g:gitgutter_sign_removed_first_line = '^'
 let g:gitgutter_sign_modified_removed = '│'
 set updatetime=250
-nmap <Leader>gn <Plug>GitGutterNextHunk  
-nmap <Leader>gp <Plug>GitGutterPrevHunk
+nmap <Leader>gn <Plug>(GitGutterNextHunk)  
+nmap <Leader>gp <Plug>(GitGutterPrevHunk)
 
 " Ruby
 let test#strategy = "vimux"
@@ -232,10 +224,15 @@ let g:go_highlight_methods = 1
 let g:go_highlight_operators = 1
 let g:go_highlight_structs = 1
 let g:go_highlight_types = 1
-let g:go_auto_sameids = 1
+"let g:go_auto_sameids = 1
 let g:go_fmt_command = "goimports"
 let g:go_snippet_engine = "neosnippet"
 let g:go_auto_type_info = 1
+let g:go_def_mapping_enabled = 0
+
+autocmd FileType go set updatetime=300
+autocmd FileType go set shortmess+=c
+autocmd FileType go set cmdheight=2
 
 autocmd FileType go nmap <Leader>ta :GoTest -short<cr>
 autocmd FileType go nmap <Leader>tt :GoTest -short<cr>
@@ -244,7 +241,6 @@ autocmd Filetype go nmap <Leader>a <Plug>(go-alternate-edit)
 " Ember 
 nmap <Leader>a :A<CR>
 nmap <Leader>v :R<CR>
-nmap <Leader>rf <ESC>:ALEFix<CR>
 
 command GenerateTest !echo "%" | sed -E 's/^app\/components\/(.*).js$/\1/' | xargs ember g component-test 
 
@@ -275,6 +271,8 @@ endfunction
 " Use <c-space> to trigger completion.
 inoremap <silent><expr> <c-space> coc#refresh()
 
+command! -nargs=0 Format :call CocAction('format')
+
 function! s:show_documentation()
   if (index(['vim','help'], &filetype) >= 0)
     execute 'h '.expand('<cword>')
@@ -288,11 +286,10 @@ nmap <silent> gd <Plug>(coc-definition)
 nmap <silent> gy <Plug>(coc-type-definition)
 nmap <silent> gi <Plug>(coc-implementation)
 nmap <silent> gr <Plug>(coc-references)
-
-" Use K to show documentation in preview window
-nnoremap <silent> K :call <SID>show_documentation()<CR>
-
-nmap <leader>r  <Plug>(coc-codeaction)
+nmap <leader>rr  <Plug>(coc-codeaction)
+vmap <leader>rr <Plug>(coc-codeaction-selected)
+nmap <leader>rn <Plug>(coc-rename)
+nmap <leader>rf <Plug>(coc-quickfix)
 
 " Ruby
 autocmd BufNewFile,BufRead *.markdown setfiletype octopress
@@ -307,27 +304,14 @@ autocmd FileType ruby,eruby let test#ruby#rspec#executable = 'pilot exec interco
 let test#python#pytest#executable = 'script/test'
 
 " Linting
-let g:ale_sign_warning = '▲'
-let g:ale_sign_error = '●'
 highlight link ALEWarningSign Number
 highlight link ALEErrorSign Identifier
-let g:ale_open_list = 0
-let g:ale_list_window_size = 5
 
-let g:ale_linters = {
-\   'cs': ['OmniSharp'],
-\   'handlebars': ['prettier'],
-\}
-let g:ale_fixers = {
-\   'handlebars': ['prettier'],
-\   'javascript': ['prettier'],
-\   'ruby': ['rubocop'],
-\   'python': ['black']
-\}
-
-let g:ale_javascript_prettier_use_local_config = 1
-
-autocmd FileType javascript.jsx let g:ale_fix_on_save = 1
+" First letter of runner's name must be uppercase
+let test#custom_runners = {'javascript': ['Ember'], 'typescript': ['Ember']}
+autocmd FileType javascript,typescript nmap <Leader>tf <Esc> :TestFile<CR>
+autocmd FileType javascript,typescript nmap <Leader>tl <Esc> :TestNearest<CR>
+autocmd FileType javascript,typescript nmap <Leader>tt <Esc> :TestLast<CR>
 
 let g:closetag_filenames = "*.html,*.xhtml,*.phtml,*.erb,*.js"
 let g:closetag_xhtml_filenames = '*.xhtml,*.js,*.erb'
@@ -346,43 +330,12 @@ let g:lightline = {
 \ 'inactive': {
 \   'left': [['filename', 'modified']],
 \ },
-\ 'component_expand': {
-\   'linter_warnings': 'LightlineLinterWarnings',
-\   'linter_errors': 'LightlineLinterErrors',
-\   'linter_ok': 'LightlineLinterOK'
-\ },
 \ 'component_function': {
 \   'cocstatus': 'coc#status'
 \ },
-\ 'component_type': {
-\   'readonly': 'error',
-\   'linter_warnings': 'warning',
-\   'linter_errors': 'error'
-\ },
 \ }
 
-function! LightlineLinterWarnings() abort
-  let l:counts = ale#statusline#Count(bufnr(''))
-  let l:all_errors = l:counts.error + l:counts.style_error
-  let l:all_non_errors = l:counts.total - l:all_errors
-  return l:counts.total == 0 ? '' : printf('%d !', all_non_errors)
-endfunction
-
-function! LightlineLinterErrors() abort
-  let l:counts = ale#statusline#Count(bufnr(''))
-  let l:all_errors = l:counts.error + l:counts.style_error
-  let l:all_non_errors = l:counts.total - l:all_errors
-  return l:counts.total == 0 ? '' : printf('%d X', all_errors)
-endfunction
-
-function! LightlineLinterOK() abort
-  let l:counts = ale#statusline#Count(bufnr(''))
-  let l:all_errors = l:counts.error + l:counts.style_error
-  let l:all_non_errors = l:counts.total - l:all_errors
-  return l:counts.total == 0 ? '✓ ' : ''
-endfunction
-
-autocmd User ALELint call s:MaybeUpdateLightline()
+autocmd User CocStatusChange,CocDiagnosticChange call lightline#update()
 
 " Update and show lightline but only if it's visible (e.g., not in Goyo)
 function! s:MaybeUpdateLightline()
