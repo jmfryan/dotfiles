@@ -1,6 +1,25 @@
 {
+  "suggest.echodocSupport": true,
+
   "solargraph.enable": true,
-  "solargraph.filetypes": ["ruby", "eruby"]
+  "solargraph.filetypes": ["ruby", "eruby"],
+
+  "tsserver.implicitProjectConfig.experimentalDecorators": true,
+  "eslint.autoFixOnSave": true,
+
+  "diagnostic.errorSign": "",
+  "diagnostic.warningSign": "",
+  "diagnostic.hintSign": "",
+  "diagnostic.infoSign": "",
+  "languageserver": {
+    "golang": {
+      "command": "gopls",
+      "rootPatterns": ["go.mod", ".vim/", ".git/", ".hg/"],
+      "filetypes": ["go"]
+    }
+  },
+
+  "eslint.filetypes": ["javascript", "javascriptreact", "typescript"]
 }
 
 

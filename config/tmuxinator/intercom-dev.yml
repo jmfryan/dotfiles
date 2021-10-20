@@ -46,16 +46,15 @@ windows:
       panes:
         - vim
         - 
-        - pilot:
-          - pilot start intercom
+        - ./script/server
 
   - embercom:
       root: ~/src/embercom
       layout: main-vertical
       panes:
         - vim
-        - ./node_modules/ember-cli/bin/ember test --server
-        - ./node_modules/ember-cli/bin/ember server
+        - ./script/test
+        - ./script/server
   - extras:
       layout: tiled
       panes:
