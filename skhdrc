@@ -1,0 +1,82 @@
+# opens iTerm2
+alt - return : "${HOME}"/.config/chunkwm/scripts/misc/open_iTerm2.sh
+
+# opens Activity Monitor a la task manager
+shift + alt - escape : open "/Applications/Utilities/Activity Monitor.app"
+
+# ========== chunkwm ===========================
+
+# Legend
+
+# alt - <key> : Navigation
+# lctrl + alt - <key>           : Moving / manipulating windows
+# shift + alt - <key>           : Resizing windows
+# lctrl + shift + alt - <key>   : chunkwm settings
+
+# Main navigation keys are WSAD for left hand and
+# IKJL for right hand.
+
+# Arrow keys aren't used because they clash with
+# highlighting words with the alt key.
+
+# ========== Navigation ========================
+
+# change focus
+alt - j : chunkc tiling::window --focus next
+alt - k : chunkc tiling::window --focus prev
+
+# ========== Moving Windows ====================
+
+# move focused window
+lctrl + alt - h : yabai -m window --warp west
+lctrl + alt - j : yabai -m window --warp south
+lctrl + alt - k : yabai -m window --warp north
+lctrl + alt - l : yabai -m window --warp east
+
+
+# ========== Floating Windows ==================
+
+lctrl + alt - space : yabai -m window --toggle split
+
+# make floating window fill left-half / right-half of screen
+lctrl + alt - a : "${HOME}"/.config/chunkwm/scripts/window/float.sh left
+lctrl + alt - d : "${HOME}"/.config/chunkwm/scripts/window/float.sh right
+
+# make floating window center
+lctrl + alt - s : "${HOME}"/.config/chunkwm/scripts/window/float.sh down
+
+# make floating window fullscreen
+lctrl + alt - w : "${HOME}"/.config/chunkwm/scripts/window/float.sh up
+
+# ========== Resizing Windows ==================
+
+# resize windows
+shift + alt - h : "${HOME}"/.config/chunkwm/scripts/window/resize.sh left
+shift + alt - j : "${HOME}"/.config/chunkwm/scripts/window/resize.sh down
+shift + alt - k : "${HOME}"/.config/chunkwm/scripts/window/resize.sh up
+shift + alt - l : "${HOME}"/.config/chunkwm/scripts/window/resize.sh right
+
+# equalize size of windows
+shift + alt - 0 : chunkc tiling::desktop --equalize
+
+# ========== Misc ==============================
+
+# hard restart chunkwm
+lctrl + shift + alt - r : "${HOME}"/.config/yabai/scripts/misc/restart.sh
+
+# make window native fullscreen
+alt - f : chunkc tiling::window --toggle fullscreen
+shift + alt - f : chunkc tiling::window --toggle native-fullscreen
+
+# change layout of desktop
+shift + alt - c : "${HOME}"/.config/chunkwm/scripts/misc/change_mode.sh
+
+# increase / decrease gaps
+lctrl + shift + alt - g : "${HOME}"/.config/chunkwm/scripts/misc/gaps.sh 20 20 10 10 15
+
+# set insertion point for focused container
+lctrl + alt - x : chunkc tiling::window --use-insertion-point cancel
+lctrl + alt - a : chunkc tiling::window --use-insertion-point west
+lctrl + alt - s : chunkc tiling::window --use-insertion-point south
+lctrl + alt - w : chunkc tiling::window --use-insertion-point north
+lctrl + alt - d : chunkc tiling::window --use-insertion-point east
