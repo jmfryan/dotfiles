@@ -95,6 +95,26 @@ Plug 'alvan/vim-closetag'
 
 call plug#end()
 
+g:coc_global_extensions = [
+  \'coc-tailwindcss',
+  \'coc-eslint',
+  \'coc-tsserver',
+  \'coc-solargraph'
+\]
+
+call coc#config('coc.preferences', {
+  \ 'suggest.echodocSupport': true,
+  \ 'solargraph.enable': true,
+  \ "solargraph.filetypes": ['ruby', 'eruby'],
+  \ 'tsserver.implicitProjectConfig.experimentalDecorators': true,
+  \ 'eslint.autoFixOnSave': true,
+  \ 'diagnostic.errorSign': '',
+  \ 'diagnostic.warningSign': '',
+  \ 'diagnostic.hintSign': '',
+  \ 'diagnostic.infoSign': '',
+  \ 'eslint.filetypes': ['javascript', 'javascriptreact', 'typescript']
+  \ })
+
 let mapleader = " "
 
 syntax on
