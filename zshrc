@@ -1,3 +1,5 @@
+ZSH_DISABLE_COMPFIX=true
+
 export ZSH=$HOME/.oh-my-zsh
 ZSH_THEME="simple"
 plugins=(git)
@@ -45,9 +47,16 @@ alias vim=nvim
 
 eval "$(intercom-profile)"
 
+export LDFLAGS="-L/usr/local/opt/readline/lib"
+export CPPFLAGS="-I/usr/local/opt/readline/include"
+export PKG_CONFIG_PATH="/usr/local/opt/readline/lib/pkgconfig"
+export RUBY_CONFIGURE_OPTS="--with-openssl-dir=$(brew --prefix openssl@1.1)"
+
+
 export PATH="$HOME/.yarn/bin:$HOME/.config/yarn/global/node_modules/.bin:$PATH"
 source ~/.zshrc.private
 
+alias assume-role='function(){eval $(hammer assume-role $@);}'
 
 export NVM_DIR="$HOME/.nvm"
 [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
