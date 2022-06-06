@@ -42,8 +42,8 @@ BASE16_SHELL="$HOME/.config/base16-shell/"
 
 source "$BASE16_SHELL/scripts/base16-material-darker.sh"
 
-export EDITOR='nvim'
-alias vim=nvim
+export EDITOR='~/.local/bin/lvim'
+alias vim=~/.local/bin/lvim
 
 eval "$(intercom-profile)"
 
@@ -64,3 +64,5 @@ export NVM_DIR="$HOME/.nvm"
 
 # Add RVM to PATH for scripting. Make sure this is the last PATH variable change.
 export PATH="$PATH:$HOME/.rvm/bin"
+
+source $HOME/.cargo/env

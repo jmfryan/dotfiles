@@ -40,8 +40,8 @@ Plug 'mattn/webapi-vim'
 Plug 'mattn/vim-gist'
 Plug 'tpope/vim-rhubarb' " browse on github
 Plug 'scrooloose/nerdtree' " file browser
-Plug 'ryanoasis/vim-devicons' " file icons
-Plug 'vwxyutarooo/nerdtree-devicons-syntax'
+" Plug 'ryanoasis/vim-devicons' " file icons
+" Plug 'vwxyutarooo/nerdtree-devicons-syntax'
 Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': './install --all' } " install fzf command line
 Plug 'junegunn/fzf.vim' " fzf fuzzy finder
 Plug 'mileszs/ack.vim' " Ack for file serach
@@ -96,7 +96,6 @@ Plug 'alvan/vim-closetag'
 call plug#end()
 
 g:coc_global_extensions = [
-  \'coc-tailwindcss',
   \'coc-eslint',
   \'coc-tsserver',
   \'coc-solargraph'
@@ -195,7 +194,7 @@ nnoremap <Leader>ff :Ack! -F ""<left><C-r><C-w><CR>
 nnoremap <Leader>fa :Ack! -F ""<left><C-r><C-w><right> app
 
 " Quick access to git commands
-nnoremap <Leader>gs :Gstatus<CR><C-w>10+
+nnoremap <Leader>gs :Git<CR>
 nnoremap <Leader>gd :Gdiff<CR>
 nnoremap <Leader>gb :Gblame<CR>
 
