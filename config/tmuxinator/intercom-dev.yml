@@ -58,7 +58,7 @@ windows:
   - extras:
       layout: tiled
       panes:
-        - pilot start alexandria
+        - pilot start integrations
         - pilot start intercom-js
         - pilot start nexus-relay
         - pilot start nexus-go
