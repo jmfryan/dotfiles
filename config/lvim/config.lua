@@ -59,11 +59,18 @@ lvim.plugins = {
   { "benmills/vimux" },
   { "mileszs/ack.vim"},
   { "folke/trouble.nvim" },
+  { "patstockwell/vim-monokai-tasty"},
+  { "sainnhe/sonokai" },
   {
     "vim-test/vim-test",
     cmd = { "TestNearest", "TestFile", "TestSuite", "TestLast", "TestVisit" },
     keys = { "<localleader>tf", "<localleader>tn", "<localleader>ts" },
   },
+  { "tpope/vim-rails" },
+  { 'brooth/far.vim' },
+  { 'tpope/vim-dadbod' },
+  { 'kristijanhusak/vim-dadbod-ui' },
+  { 'kristijanhusak/vim-dadbod-completion' }
 }
 
 local trouble = require("trouble.providers.telescope")
@@ -86,6 +93,7 @@ lvim.builtin.telescope.defaults.mappings = {
 }
 
 vim.g["test#strategy"] = "vimux"
+
 vim.cmd [[
     let test#ruby#rspec#executable = 'pilot exec intercom bundle exec rspec -- --no-profile'
 ]]
@@ -105,3 +113,4 @@ lvim.builtin.which_key.mappings["f"] = {
   a = { ":Ack! -F \"<C-r><C-w>\" app<CR>", "Word under cursor (/app only)" },
 }
 
+vim.opt.showtabline = 0
