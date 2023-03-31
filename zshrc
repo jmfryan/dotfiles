@@ -40,7 +40,7 @@ BASE16_SHELL="$HOME/.config/base16-shell/"
   [ -s "$BASE16_SHELL/profile_helper.sh"  ] && \
     eval "$("$BASE16_SHELL/profile_helper.sh")"
 
-source "$BASE16_SHELL/scripts/base16-material-darker.sh"
+source "$BASE16_SHELL/scripts/base16-onedark-darker.sh"
 
 export EDITOR='~/.local/bin/lvim'
 alias vim=~/.local/bin/lvim
@@ -65,4 +65,8 @@ export NVM_DIR="$HOME/.nvm"
 # Add RVM to PATH for scripting. Make sure this is the last PATH variable change.
 export PATH="$PATH:$HOME/.rvm/bin"
 
+export HONEYCOMB_DEVELOPMENT_KEY="916aa4c4951571ba623aa5d08f79a18b"
+
 source $HOME/.cargo/env
+
+

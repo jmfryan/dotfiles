@@ -62,5 +62,10 @@ windows:
         - pilot start intercom-js
         - pilot start nexus-relay
         - pilot start nexus-go
+  - notes:
+      root: ~/Documents
+      panes:
+        - vim jack.org
   - scratch:
+    
 
