@@ -90,16 +90,16 @@ local _, actions = pcall(require, "telescope.actions")
 lvim.builtin.telescope.defaults.mappings = {
   -- for input mode
   i = {
-    ["<c-j>"] = actions.move_selection_next,
-    ["<c-k>"] = actions.move_selection_previous,
-    ["<c-n>"] = actions.cycle_history_next,
-    ["<c-p>"] = actions.cycle_history_prev,
+    ["<C-j>"] = actions.move_selection_next,
+    ["<C-k>"] = actions.move_selection_previous,
+    ["<C-n>"] = actions.cycle_history_next,
+    ["<C-p>"] = actions.cycle_history_prev,
     ["<c-t>"] = trouble.open_with_trouble,
   },
   -- for normal mode
   n = {
-    ["<c-j>"] = actions.move_selection_next,
-    ["<c-k>"] = actions.move_selection_previous,
+    ["<C-j>"] = actions.move_selection_next,
+    ["<C-k>"] = actions.move_selection_previous,
     ["<c-t>"] = trouble.open_with_trouble,
   },
 }
@@ -108,23 +108,23 @@ vim.g["test#strategy"] = "vimux"
 
 vim.cmd [[
     let test#ruby#rspec#executable = 'pilot exec intercom bundle exec rspec -- --no-profile'
-    let test#custom_runners = {'javascript': ['ember'], 'typescript': ['ember']}
+    let test#custom_runners = {'javascript': ['Ember'], 'typescript': ['Ember']}
 ]]
 
 vim.g.material_style = "darker"
 lvim.builtin.terminal.active = true
 lvim.builtin.which_key.mappings["t"] = {
-  name = "test",
-  t = { "<cmd>testlast<cr>", "last" },
-  f = { "<cmd>testfile<cr>", "file" },
-  n = { "<cmd>testnearest<cr>", "nearest" },
-  s = { "<cmd>testsuite<cr>", "suite" },
+  name = "Test",
+  t = { "<cmd>TestLast<cr>", "Last" },
+  f = { "<cmd>TestFile<cr>", "File" },
+  n = { "<cmd>TestNearest<cr>", "Nearest" },
+  s = { "<cmd>TestSuite<cr>", "Suite" },
 }
 
 lvim.builtin.which_key.mappings["f"] = {
-  name = "find",
-  f = { ":ack! -f \"<c-r><c-w>\"<cr>", "word under cursor" },
-  a = { ":ack! -f \"<c-r><c-w>\" app<cr>", "word under cursor (/app only)" },
+  name = "Find",
+  f = { ":Ack! -F \"<C-r><C-w>\"<CR>", "Word under cursor" },
+  a = { ":Ack! -F \"<C-r><C-w>\" app<CR>", "Word under cursor (/app only)" },
 }
 
 vim.opt.showtabline = 0
@@ -133,7 +133,7 @@ local linters = require "lvim.lsp.null-ls.linters"
 linters.setup {
   {
     command = "eslint_d",
-    ---@usage specify which filetypes to enable. by default a providers will attach to all the filetypes it supports.
+    ---@usage specify which filetypes to enable. By default a providers will attach to all the filetypes it supports.
     filetypes = { "javascript", "typescript" },
   },
 }
